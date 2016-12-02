@@ -61,12 +61,12 @@ void Matrix_Template<T>::set(int i, int j, const T& val) // exceptions
 template<typename T>
 int Matrix_Template<T>::rows()
 {
-	return row;
+	return this -> row;
 }
 template<typename T>
 int Matrix_Template<T>::columns()
 {
-	return column;
+	return this -> column;
 }
 std::ostream& operator<< (std::ostream& ostr, const Point& pt)
 {
@@ -94,96 +94,108 @@ void Matrix_Template<T>::sum(Matrix_Template<T>& obj) // exceptions
 template<typename T>
 Matrix_Template<T>& Matrix_Template<T>::operator=(Matrix_Template<T>& obj)
 {
-	if((this->row == obj.row) && (this->column == obj.column))
+	
+	if((column == obj.columns()) && (row == obj.rows()))
 	{
 		for(int i = 0; i < row; i++)
 		{
 			for(int j = 0; j < column; j++)
 			{
-				arr_ptr[ i ][ j ] = obj.arr_ptr[ i ][ j ];
+				arr_ptr[ i ][ j ] = obj.get(i, j);
 			}
 		}
-		return *this;
 	}
-	if((column != obj.column) || (row != obj.row))
+	else // if column != obj.column OR row != obj.row
 	{
+		//firstly we clear our old mathrix array
 		for(int i = 0; i < row; i++)
 		{
-			delete []arr_ptr[i];
+			delete []arr_ptr[ i ]; // may need []
 		}
-		delete []arr_ptr; // free array
-		column = obj.column;
-		row = obj.row;
-		arr_ptr = new T*[obj.row];
-		for(int i = 0; i < obj.row; i++)
+		delete []arr_ptr; // may need []
+		//now we allocate the new one
+		arr_ptr = new T*[ obj.rows() ]; // obj.rows size array of pointers
+		for(int i = 0; i < obj.rows(); i++)
 		{
-			arr_ptr[i] = new T[obj.column];
-		} // allocate new one
-		for(int i = 0; i < obj.row; i++)
+			arr_ptr[ i ] = new T[ obj.columns() ]; // every pointer points to T array of obj.column size
+		}
+		// reinit other fields:
+		column = obj.columns();
+		row = obj.rows();
+		// now copy arr_ptr array of obj to our new array
+		for(int i = 0; i < row; i++)
 		{
-			for(int j = 0; j < obj.column; j++)
+			for(int j = 0; j < column; j++)
 			{
-				arr_ptr[ i ][ j ] = obj.arr_ptr[ i ][ j ];
+				arr_ptr[ i ][ j ] = obj.get(i, j);
 			}
 		}
 	}
 	return *this;
 }
+
 template<typename T>
 Matrix_Template<T>& Matrix_Template<T>::rotate()
 {
-	Matrix_Template<T> temp_m(*this); //rotated_cp(this->column, this->row),
-	Matrix_Template<T> rotated(column, row);
 	//constr change rows and columns
-	//change temp_m to this
+	Matrix_Template<T> temp(*this);
+	//change rows-columns of rotated
+	row = temp.columns();
+	column = temp.rows(); 
+	// dealloc 2d array allocated in constructor
+	// for(int i = 0; i < rotated.rows(); i++)
+	// {
+	// 	delete []rotated.arr_ptr[ i ]; // may need []
+	// }
+	// delete []rotated.arr_ptr; // may need []
+	// new alloc
+	arr_ptr = new T*[ row ]; 
 	for(int i = 0; i < row; i++)
 	{
-		delete []arr_ptr[i];
+		arr_ptr[ i ] = new T[ column ];
 	}
-	delete []arr_ptr; //free
-	rotated.row = column;
-	rotated.column = row;//change rows-columns
-	rotated.arr_ptr = new T*[rotated.row];// new alloc
-	for(int i = 0; i < rotated.row; i++)
+	for(int i = 0; i < row; i++)
 	{
-		rotated.arr_ptr[ i ] = new T[ rotated.column ];
-	}
-	for(int i = 0; i < rotated.row; i++)
-	{
-		for(int j = 0; j < rotated.column; j++)
+		for(int j = 0; j < column; j++)
 		{
-			rotated.arr_ptr[ i ][ j ] = temp_m.arr_ptr[ j ][ i ];
+			arr_ptr[ i ][ j ] = temp.arr_ptr[ j ][ i ];
 		}
-		str_inv(rotated.arr_ptr[i], rotated.column);
+		str_inv(arr_ptr[ i ], column);
 	}
-	return rotated;
+	return *this;
 }
 
 template<typename T>
-Matrix_Template<T>& Matrix_Template<T>::transponate() 
+Matrix_Template<T>& Matrix_Template<T>::transponate()
 {
-	Matrix_Template<T> temp_m(*this), rotated_cp(*this);
-	for(int i = 0; i < rotated_cp.rows(); i++)
+	//constr change rows and columns
+	Matrix_Template<T> temp(*this);
+	//change rows-columns of rotated
+	row = temp.columns();
+	column = temp.rows(); 
+	// dealloc 2d array allocated in constructor
+	// for(int i = 0; i < rotated.rows(); i++)
+	// {
+	// 	delete []rotated.arr_ptr[ i ]; // may need []
+	// }
+	// delete []rotated.arr_ptr; // may need []
+	// new alloc
+	arr_ptr = new T*[ row ]; 
+	for(int i = 0; i < row; i++)
 	{
-		delete []rotated_cp.arr_ptr[i];
+		arr_ptr[ i ] = new T[ column ];
 	}
-	delete []rotated_cp.arr_ptr; //free
-	rotated_cp.row = rotated_cp.columns();
-	rotated_cp.column = rotated_cp.rows();//change rows-columns
-	rotated_cp.arr_ptr = new T*[rotated_cp.rows()];// new alloc
-	for(int i = 0; i < rotated_cp.rows(); i++)
+	for(int i = 0; i < row; i++)
 	{
-		rotated_cp.arr_ptr[ i ] = new T[ rotated_cp.columns() ];
-	}
-	for(int i = 0; i < rotated_cp.rows(); i++)
-	{
-		for(int j = 0; j < rotated_cp.columns(); j++)
+		for(int j = 0; j < column; j++)
 		{
-			rotated_cp.arr_ptr[ i ][ j ] = temp_m.arr_ptr[ j ][ i ];
+			arr_ptr[ i ][ j ] = temp.arr_ptr[ j ][ i ];
 		}
+		//for transponation no need str_inv(arr_ptr[ i ], column);
 	}
-	return rotated_cp;
+	return *this;
 }
+
 template<typename T>
 void Matrix_Template<T>::str_inv(T* arr, int size)
 {

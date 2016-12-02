@@ -4,7 +4,7 @@
 using namespace std;
 int main()
 {
-	Matrix_Template<int> matrix1(2,4);
+	Matrix_Template<int> matrix1(1,3);
 	Matrix_Template<int> matrix2(2,4);
 	//BEGIN MATRICES INPUT
 	cout << "\n\n1:\n";
@@ -47,14 +47,13 @@ int main()
 		{
 			cout << matrix2.get(i, j) << " ";
 		}
-	} 
-	matrix1 = matrix2.rotate();
-	//matrix1.rotate();
-	//matrix1 = matrix2.rotate();
-	//matrix1 = matrix1.rotate();
-	//matrix1 = matrix2.transponate();
-	//matrix1 = matrix1.transponate();	
-	cout << "\n\nM1 rotated:\n";
+	}
+	Matrix_Template<int> matrix3(matrix1); 
+	//matrix1 = matrix2 = matrix3 = matrix2;
+	//matrix3 = matrix2.rotate().rotate();
+	matrix3 = matrix2.transponate();
+	matrix1 = matrix3;
+	cout << "\n\nM1:\n";
 	for(int i = 0; i < matrix1.rows(); i++)
 	{
 		cout << "\n\n";
