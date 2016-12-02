@@ -1,5 +1,5 @@
 # Matrix Template Class
-&&
+
  - constructor: Matrix_Template(int _rows = 0, int _columns = 0);
  - copy constructor: Matrix_Template(Matrix_Template<T>& obj);
  - "operator=" with resizing: Matrix_Template<T>& operator=(Matrix_Template<T>& obj);
